@@ -1,0 +1,48 @@
+{
+    "optimization":{
+        "user_input":{
+            "platform_filter":"None",
+            "opt":"None",
+            "Min_CPU_num":"0",
+            "Min_GPU_num":"0",
+            "Min_RAM_Size":"1000",
+            "Start_Date":"2021-04-11 6:00:00",
+            "End_Date":"2021-04-11 18",
+            "Region":["us-east","us-central"],
+            "constraints":{
+                "constraint_1":{
+                    "region":"us-east-1a",
+                    "instance":"t4g.micro",
+                    "max_num":"5"
+                },
+                "constraint_2":{
+                    "region":"us-east-1b",
+                    "instance":"t4g.micro",
+                    "max_num":"3"
+                }                
+            }
+        },
+        "global_vars":{
+            "TEST":"True",
+            "plot":"True",
+            "return_json":"True",
+
+            "aws_price_path":"../working/Prediction.csv",
+            "gcp_price_path":"../input/flant-gcp-data/GCP.csv",
+            "azu_price_path":"../input/flant-gcp-data/Azure.csv",
+
+            "region_label_path":"../working/region_label_dict_us.csv",
+            "ins_label_path":"../working/ins_label_dict_us.csv",
+            "test_set_path":"../working/train_test_test_us.csv",
+            
+            "add_on_path":"../working/SUSE_Linux_price_diff.csv",
+            "tier_path":"../input/flant-aws-tier-new/tier_df_updated.csv",
+            "opt_df_path":"../input/flant-aws-tier-new/ins_opt_dict.csv"
+        }
+    }
+}
+
+
+
+
+
