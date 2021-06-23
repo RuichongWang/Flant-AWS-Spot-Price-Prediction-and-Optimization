@@ -120,3 +120,7 @@ As for *constraints*, some user may not want to use particular instance from par
 }
 ```
 
+## Kaggle Notebooks
+[Optimization](https://www.kaggle.com/ruichongwang/flant-aws-optimization)
+
+[Price Add-on between different OS in different regions](https://www.kaggle.com/ruichongwang/flant-project-aws-os-add-on-price)
