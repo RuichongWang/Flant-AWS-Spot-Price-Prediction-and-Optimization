@@ -62,6 +62,16 @@ aws ec2 describe-spot-price-history --output table\
 In this section, we processing the txt file into *DataFrame* and since the price add-on between different OS remain the same in each region, here we ***ONLY*** kept the price history of ***Linux/UNIX***. After that, we split the first 53 days' data as training set, and last 7 days' data as test set. In this section, we also output the price add=on between different OS in different regions so we can make recommendation for users who are interested in OS other than Linux/UNIX.
 
 ### Modeling and Model Comparison
+Various Machine Learning and Deep Learning models including SARIMAX, Prophet, MLP, etc. were employed to predict the price of spot/preemptible instances. Finally, the one with the best scores was chosen for deployment.
+The following table shows the evaluation scores of the significantly contributing models that we examined.
+| Model    | MAE    | RMSE   | MAPE    |
+|----------|--------|--------|---------|
+| [CNN-LSTM](https://machinelearningmastery.com/cnn-long-short-term-memory-networks/) | 0.0004 | 0.0027 | 0.4834  |
+| [LSTM](https://colah.github.io/posts/2015-08-Understanding-LSTMs/) | 0.0051 | 0.1140  | 2.6201| 
+| [LGBM](https://github.com/microsoft/LightGBM)     | 0.0031 | 0.0079 | 1.7423  |       
+| [CNN](https://towardsdatascience.com/basics-of-the-classic-cnn-a3dce1225add)    | 0.0013 | 0.0039  | 0.5064  |     
+| [PyCaret](https://www.pycaret.org/tutorials/html/REG101.html) | 0.0051 | 01140 | 3.4693 |
+CNN-LSTM performed the best on the AWS spot price dataset and we concluded the time-series price forecast by implementing this one.
 
 ### Optimization
 In this section, we take user input as constraints, hourly cost as objective function, formulated a optimization problem, we use *Pulp* to solve it. User can feed in different kinds of constraints from the website and can use JSON file to pass the constraints to the function. 
