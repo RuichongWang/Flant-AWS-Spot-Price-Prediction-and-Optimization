@@ -64,13 +64,20 @@ In this section, we processing the txt file into *DataFrame* and since the price
 ### Modeling and Model Comparison
 Various Machine Learning and Deep Learning models including SARIMAX, Prophet, MLP, etc. were employed to predict the price of spot/preemptible instances. Finally, the one with the best scores was chosen for deployment.
 The following table shows the evaluation scores of the significantly contributing models that we examined.
-| Model    | MAE    | RMSE   | MAPE    |
-|----------|--------|--------|---------|
-| [CNN-LSTM](https://machinelearningmastery.com/cnn-long-short-term-memory-networks/) | 0.0004 | 0.0027 | 0.4834  |
-| [LSTM](https://colah.github.io/posts/2015-08-Understanding-LSTMs/) | 0.0051 | 0.1140  | 2.6201| 
-| [LGBM](https://github.com/microsoft/LightGBM)     | 0.0031 | 0.0079 | 1.7423  |       
-| [CNN](https://towardsdatascience.com/basics-of-the-classic-cnn-a3dce1225add)    | 0.0013 | 0.0039  | 0.5064  |     
-| [PyCaret](https://www.pycaret.org/tutorials/html/REG101.html) | 0.0051 | 01140 | 3.4693 |
+| Features        | Target         | Model    | MAE    | RMSE   | MAPE    |
+|-----------------|----------------|----------|--------|--------|---------|
+| Feature Set   1 | SpotPrice(t+1) | [CNN-LSTM](https://machinelearningmastery.com/cnn-long-short-term-memory-networks/) | 0.0004 | 0.0027 | 0.4834  |
+| Feature Set   2 | SpotPrice      | [LSTM](https://colah.github.io/posts/2015-08-Understanding-LSTMs/) | 0.0051 | 0.1140  | 2.6201|
+| Feature Set   3 | SpotPrice      | [LGBM](https://github.com/microsoft/LightGBM)     | 0.0031 | 0.0079 | 1.7423  |
+| Feature Set   1 | SpotPrice(t+1) | [CNN](https://towardsdatascience.com/basics-of-the-classic-cnn-a3dce1225add)    | 0.0013 | 0.0039  | 0.5064  |
+| Feature Set   4 | SpotPrice      | [PyCaret](https://www.pycaret.org/tutorials/html/REG101.html) | 0.0155 | 0.2249 | 1.2028 |
+Please see the details on different kinds of time-series and statistical features we used to evaluate the models.
+| Feature Identity | Features Used    |
+|------------------|------------------|
+| Feature Set 1    | SpotPrice(t-3),  SpotPrice(t-2), SpotPrice(t-1),   SpotPrice(t)  |
+| Feature Set 2    | InstanceType, Availability, Date, Day, Hour, Timedel, Weekend_YorN, DayofYear, 4MA, 4SD, 24MA, 24SD, upperband, lowerband, RC_24 |
+| Feature Set 3    | AvailabilityZone, InstanceType, Timedel, Day, Hour, Weekend_YorN, DayofYear |
+| Feature Set 4    | SpotPrice(t-2), SpotPrice(t-1),   SpotPrice(t)  |
 CNN-LSTM performed the best on the AWS spot price dataset and we concluded the time-series price forecast by implementing this one.
 
 ### Optimization
