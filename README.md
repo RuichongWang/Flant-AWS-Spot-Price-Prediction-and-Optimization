@@ -13,7 +13,43 @@ Model.py                 ==   main function, take the output of Preprocess.py an
 Get_Pre.py               ==   wrapper of Preprocess.py and Model.py not necessary
 Get_Opt.py               ==   optimization function, take the prediction result and user input (requirement) and output the combination JSON
 ```
+
 ## Repository summary
+### How to use?
+- Install AWS CLI with the help of [this document](https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2.html).
+- Set up *aws configure* with the help of [this document](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-quickstart.html).
+- (Ignore this step if you are using it locally) Upload all the code to your server.
+- Pulling the data using `sh pulling_data.sh`, this may take serveral minutes.
+- Preprocess the data using `python3 Preprocess.py`.
+- Train models and get predictions by using `python3 Get_Pre.py`.
+- Get optimization result by using `python3 Get_Opt.py`.
+
+### Sample Output
+```
+{'2021-06-10 06:00:00': {
+    'CombinationCost': 1.5751331341739343, 
+    'InstanceComb': {
+        'InstanceType_1': {
+            'AvailabilityZone': 'us-central1', 
+            'InstanceType': 'm1-ultramem-40', 
+            'Number': 1}, 
+        'InstanceType_2': {
+            'AvailabilityZone': 'us-west-1a', 
+            'InstanceType': 't3a.micro', 
+            'Number': 31}, 
+        'InstanceType_3': {
+            'AvailabilityZone': 'us-west-1a', 
+            'InstanceType': 't4g.micro', 
+            'Number': 5}, 
+        'InstanceType_4': {
+            'AvailabilityZone': 'us-west-1c', 
+            'InstanceType': 't4g.micro', 
+            'Number': 3}
+        }
+    }
+}
+```
+
 ### Data Collection
 All the data are directly collected from AWS CLI using the following command. ***pulling_data.sh*** is a wrapper for the command to pull all the spot price data in us-east and us-west. Per AWS restriction, we can pull up to 2 months data.
 ```
@@ -64,37 +100,3 @@ As for *constraints*, some user may not want to use particular instance from par
 }
 ```
 
-### How to use?
-- Install AWS CLI with the help of [this document](https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2.html).
-- Set up *aws configure* with the help of [this document](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-quickstart.html).
-- (Ignore this step if you are using it locally) Upload all the code to your server.
-- Pulling the data using `sh pulling_data.sh`, this may take serveral minutes.
-- Preprocess the data using `python3 Preprocess.py`.
-- Train models and get predictions by using `python3 Get_Pre.py`.
-- Get optimization result by using `python3 Get_Opt.py`.
-
-### Sample Output
-```
-{'2021-06-10 06:00:00': {
-    'CombinationCost': 1.5751331341739343, 
-    'InstanceComb': {
-        'InstanceType_1': {
-            'AvailabilityZone': 'us-central1', 
-            'InstanceType': 'm1-ultramem-40', 
-            'Number': 1}, 
-        'InstanceType_2': {
-            'AvailabilityZone': 'us-west-1a', 
-            'InstanceType': 't3a.micro', 
-            'Number': 31}, 
-        'InstanceType_3': {
-            'AvailabilityZone': 'us-west-1a', 
-            'InstanceType': 't4g.micro', 
-            'Number': 5}, 
-        'InstanceType_4': {
-            'AvailabilityZone': 'us-west-1c', 
-            'InstanceType': 't4g.micro', 
-            'Number': 3}
-        }
-    }
-}
-```
