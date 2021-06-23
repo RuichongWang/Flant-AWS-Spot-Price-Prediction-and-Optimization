@@ -80,6 +80,7 @@ Please see the details on different kinds of time-series and statistical feature
 | Feature Set 2    | InstanceType, Availability, Date, Day, Hour, Timedel, Weekend_YorN, DayofYear, 4MA, 4SD, 24MA, 24SD, upperband, lowerband, RC_24 |
 | Feature Set 3    | AvailabilityZone, InstanceType, Timedel, Day, Hour, Weekend_YorN, DayofYear |
 | Feature Set 4    | SpotPrice(t-2), SpotPrice(t-1),   SpotPrice(t)  |
+
 CNN-LSTM performed the best on the AWS spot price dataset and we concluded the time-series price forecast by implementing this one.
 
 ### Optimization
