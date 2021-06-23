@@ -1,0 +1,23 @@
+{
+    "platform_filter":"",
+    "opt":"",
+    "Min_CPU_num":0,
+    "Min_GPU_num":0,
+    "Min_RAM_Size":1000,
+    "Start_Date":"2021-6-10 6:00:00",
+    "End_Date":"2021-6-10 18",
+    "Region":["us-west","us-central"],
+    "plot":"True",
+    "constraints":{
+        "constraint_1":{
+            "region":"us-west-1a",
+            "instance":"t4g.micro",
+            "max_num":5
+        },
+        "constraint_2":{
+            "region":"us-west-1c",
+            "instance":"t4g.micro",
+            "max_num":3
+        }
+    }
+}

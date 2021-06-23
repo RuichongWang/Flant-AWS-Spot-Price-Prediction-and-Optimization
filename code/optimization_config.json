@@ -1,0 +1,16 @@
+{
+    "TEST":"True",
+    "return_json":"True",
+
+    "aws_price_path":"../data/Prediction.csv",
+    "gcp_price_path":"../data/GCP.csv",
+    "azu_price_path":"../data/Azure.csv",
+
+    "region_label_path":"../data/region_label_dict_us.csv",
+    "ins_label_path":"../data/ins_label_dict_us.csv",
+    "test_set_path":"../data/train_test_test_us.csv",
+    
+    "add_on_path":"../data/SUSE_Linux_price_diff.csv",
+    "tier_path":"../data/tier_df_updated.csv",
+    "opt_df_path":"../data/ins_opt_dict.csv"
+}

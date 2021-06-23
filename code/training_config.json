@@ -1,0 +1,9 @@
+{
+    "input_dir":"../data/",
+    "logging":"False",
+
+    "train_path":"../data/train_test_train_us.csv",
+    "test_path":"../data/train_test_test_us.csv",
+    "epochs":1,
+    "verbose":0
+}
