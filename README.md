@@ -72,6 +72,7 @@ The following table shows the evaluation scores of the significantly contributin
 | Feature Set   1 | SpotPrice(t+1) | [CNN](https://towardsdatascience.com/basics-of-the-classic-cnn-a3dce1225add)    | 0.0013 | 0.0039  | 0.5064  |
 | Feature Set   4 | SpotPrice      | [PyCaret](https://www.pycaret.org/tutorials/html/REG101.html) | 0.0155 | 0.2249 | 1.2028 |
 Please see the details on different kinds of time-series and statistical features we used to evaluate the models.
+
 | Feature Identity | Features Used    |
 |------------------|------------------|
 | Feature Set 1    | SpotPrice(t-3),  SpotPrice(t-2), SpotPrice(t-1),   SpotPrice(t)  |
