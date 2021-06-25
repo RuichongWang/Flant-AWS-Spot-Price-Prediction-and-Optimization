@@ -103,11 +103,11 @@ Please see the details on different kinds of time-series and statistical feature
 ### Optimization
 In this section, we take user input as constraints, hourly cost as objective function, formulated a optimization problem, we use *Pulp* to solve it. User can feed in different kinds of constraints from the website and can use JSON file to pass the constraints to the function. 
 
-*platform_filter*: User can choose only one or two platform from AWS, Google Cloud and Azure. 
+*`platform_filter`*: User can choose only one or two platform from AWS, Google Cloud and Azure. 
 
-And *opt* is for optimization type, some instances are optimized for computing, others are for storage, so if user have such concerns, we will recommend the optimized instances combination based on that. 
+And *`opt`* is for optimization type, some instances are optimized for computing, others are for storage, so if user have such concerns, we will recommend the optimized instances combination based on that. 
 
-As for *constraints*, some user may not want to use particular instance from particular regions, or these instances are only available for a limit number at that time, user can specify these if they are not satisfied with the first result.
+As for *`constraints`*, some user may not want to use particular instance from particular regions, or these instances are only available for a limit number at that time, user can specify these if they are not satisfied with the first result.
 
 *`Min_CPU_num`, `Min_GPU_num`, `Min_RAM_Size`, `Start_Date`, `End_Date`, `Region`* are self-explanatory.
 
