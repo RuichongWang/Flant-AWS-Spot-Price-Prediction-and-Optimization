@@ -1,3 +1,5 @@
+[<img src="https://github.com/RuichongWang/Flant/blob/main/Images/TFG%20AWS%402x.png">](https://public.flourish.studio/visualisation/6534824/)
+
 ## Acknowledgement 
 
 * [Kaggle](https://www.kaggle.com/)
