@@ -98,7 +98,7 @@ Please see the details on different kinds of time-series and statistical feature
 **`RC_24`**: Percentage of change in price in 24 hours
 
 
-*CNN-LSTM performed the best on the AWS spot price dataset and we concluded the time-series price forecast by implementing this one.*
+***CNN-LSTM** performed the best on the AWS spot price dataset and we concluded the time-series price forecast by implementing this one.*
 
 ### Optimization
 In this section, we take user input as constraints, hourly cost as objective function, formulated a optimization problem, we use *Pulp* to solve it. User can feed in different kinds of constraints from the website and can use JSON file to pass the constraints to the function. 
