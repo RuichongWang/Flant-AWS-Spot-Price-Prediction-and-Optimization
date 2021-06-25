@@ -53,9 +53,11 @@ def read_aws_data(aws_price_path,region_label_path,ins_label_path,tier_path,test
     return aws
 
 def read_gcp_data(gcp_price_path,add_on_path):
+    # read tabels
     gcp_raw=pd.read_csv(gcp_price_path)
     gcp_raw=gcp_raw[gcp_raw.AvailabilityZone.str.startswith('us-')]
 
+    # clean tables
     gcp_raw['gpu']=0
     gcp_raw['Price_Prediction']+=pd.read_csv(add_on_path).SUSE_Linux_price_diff.mean()   # price add on
     gcp_raw['instanceOptimized']='General Purpose'
@@ -63,10 +65,12 @@ def read_gcp_data(gcp_price_path,add_on_path):
     return gcp_raw
 
 def read_azu_data(azu_price_path,add_on_path):
+    # read tabels
     azure_raw=pd.read_csv(azu_price_path)
     azure_raw=azure_raw[azure_raw.os=='SUSE'].drop(columns=['os','storage'])
     azure_raw.columns=['AvailabilityZone','InstanceType', 'cpu', 'RAM', 'Price_Prediction']
 
+    # clean tables
     azure_raw['gpu']=0
     azure_raw['Price_Prediction']+=pd.read_csv(add_on_path).SUSE_Linux_price_diff.mean()   # price add on
     azure_raw['instanceOptimized']='General Purpose'
@@ -75,7 +79,11 @@ def read_azu_data(azu_price_path,add_on_path):
     return azure_raw
 
 def opt_one_hr(aws,gcp,azu,sample_stamp,Min_CPU_num,Min_GPU_num,Min_RAM_Size,constraints=False,platform_filter=None):
-    sample_df=aws[aws.Timestamp==sample_stamp]
+    # opt part for one single time stamps
+
+    sample_df=aws[aws.Timestamp==sample_stamp] # filter by time
+
+    # platform filter
     if platform_filter=='aws':
         sample_df=aws
     elif platform_filter=='gcp':
@@ -85,13 +93,17 @@ def opt_one_hr(aws,gcp,azu,sample_stamp,Min_CPU_num,Min_GPU_num,Min_RAM_Size,con
     else:
         sample_df=pd.concat((aws,gcp,azu))
 
-    sample_df['merge']=sample_df.AvailabilityZone+'_'+sample_df.InstanceType
+    sample_df['merge']=sample_df.AvailabilityZone+'_'+sample_df.InstanceType  # get unique key for each ins in each region
+
+    # change data type
     sample_df['cpu']=sample_df['cpu'].astype(int)
     sample_df['gpu']=sample_df['gpu'].astype(int)
     sample_df['RAM']=sample_df['RAM'].astype(str).str.replace(',','').astype(float)
     sample_df.sort_values('merge',inplace=True)
 
+    # main part for optimization
     probA=LpProblem("Problem A",LpMinimize)
+    
     # Define Parameters and parameter dictionaries 
     region_ins=sorted(sample_df['merge'].unique())
     cpus=dict(sample_df[['merge','cpu']].values)
@@ -111,6 +123,7 @@ def opt_one_hr(aws,gcp,azu,sample_stamp,Min_CPU_num,Min_GPU_num,Min_RAM_Size,con
     probA+=lpSum([decisions[i]*gpus[i] for i in region_ins]) >= Min_GPU_num,"GPU"
     probA+=lpSum([decisions[i]*rams[i] for i in region_ins]) >= Min_RAM_Size,"RAM"
     
+    # add user constraints if any
     if constraints:
         for region,ins in constraints:
             merged=region+'_'+ins
@@ -118,18 +131,22 @@ def opt_one_hr(aws,gcp,azu,sample_stamp,Min_CPU_num,Min_GPU_num,Min_RAM_Size,con
             except:
                 print(merged)
             
+    # solve and get res table
     probA.solve()
     output=[]
     for i in region_ins:
         output.append(decisions[i].varValue)
+
     return sample_df,output,value(probA.objective)
     
 def optimizer(aws,gcp,azu,Min_CPU_num,Min_GPU_num,Min_RAM_Size,Start_Date,End_Date,Region=None,platform_filter=None,opt=None,plot=True,constraints_raw=False,return_json=True):
+    # parsing constraints
     constraints={}
     for key in constraints_raw:
         k=constraints_raw[key]['region'],constraints_raw[key]['instance']
         constraints[k]=int(constraints_raw[key]['max_num'])
 
+    # filter recommendation time period
     aws=aws[(aws.Timestamp>=pd.to_datetime(Start_Date)) & (aws.Timestamp<=pd.to_datetime(End_Date))]
     sample_stamps=aws.Timestamp.unique()
 
@@ -168,19 +185,20 @@ def optimizer(aws,gcp,azu,Min_CPU_num,Min_GPU_num,Min_RAM_Size,Start_Date,End_Da
         gcp=gcp[gcp.AvailabilityZone.isin(using_region)]
         azu=azu[azu.AvailabilityZone.isin(using_region)]
 
-    # optimization
+    # optimization loop for each timestamp
     simple_res=[]
     for sample_stamp in sample_stamps:
         sample_df,output,cost=opt_one_hr(aws,gcp,azu,sample_stamp,Min_CPU_num,Min_GPU_num,Min_RAM_Size,constraints,platform_filter)
-        ins=sorted(sample_df['merge'].unique())
         
+        # clean res
+        ins=sorted(sample_df['merge'].unique())
         output_df=pd.DataFrame(output,columns=['Number of Purchase'],index=ins)
         output_df=output_df[output_df['Number of Purchase']>0]
-        
         nums=output_df.T.values[0]
         ins=output_df.index
         simple_res.append([sample_stamp,cost]+[str(nums[i])+'_'+str(ins[i]) for i in range(len(nums))])
-        
+    
+    # organize all res into df
     simple_res=pd.DataFrame(simple_res)
     simple_res.columns=['TimeStamp','Cost']+['InstanceType_%s'%x for x in range(1,simple_res.shape[1]-1)]
     inss=['InstanceType_%s'%x for x in range(1,simple_res.shape[1]-1)]
@@ -188,7 +206,7 @@ def optimizer(aws,gcp,azu,Min_CPU_num,Min_GPU_num,Min_RAM_Size,Start_Date,End_Da
 
     # plotting
     if plot:
-        gap=simple_res.Cost.max()-simple_res.Cost.min()
+        gap=simple_res.Cost.max()-simple_res.Cost.min() # resize y range
         
         fig = px.bar(simple_res, x='TimeStamp', y='Cost',color="merged",text='Cost')
         fig.update_traces(textposition='outside')
@@ -205,7 +223,7 @@ def optimizer(aws,gcp,azu,Min_CPU_num,Min_GPU_num,Min_RAM_Size,Start_Date,End_Da
         fig.write_html("plot.html")
         fig.show()  
             
-        simple_res['lag']=simple_res['merged'].shift(1)
+        simple_res['lag']=simple_res['merged'].shift(1) # get different color for different ins comb
         simple_res['same']=simple_res['lag']==simple_res['merged']
         simple_res=simple_res[~simple_res['same']].drop(['merged','lag','same'],axis=1)
 

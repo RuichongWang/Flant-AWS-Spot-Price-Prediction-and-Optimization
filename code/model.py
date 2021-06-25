@@ -13,7 +13,6 @@ from tensorflow.keras.models import Sequential
 
 warnings.filterwarnings('ignore')
 
-
 def modeling(train_path,test_path,epochs,logging=False):
     # config
     window = 3
@@ -29,15 +28,8 @@ def modeling(train_path,test_path,epochs,logging=False):
     random.seed(SEED)
     np.random.seed(0)
     tf.random.set_seed(0)
-
-    session_conf = tf.compat.v1.ConfigProto(
-        intra_op_parallelism_threads=1, 
-        inter_op_parallelism_threads=1
-    )
-    sess = tf.compat.v1.Session(
-        graph=tf.compat.v1.get_default_graph(), 
-        config=session_conf
-    )
+    session_conf = tf.compat.v1.ConfigProto(intra_op_parallelism_threads=1, inter_op_parallelism_threads=1)
+    sess = tf.compat.v1.Session(graph=tf.compat.v1.get_default_graph(), config=session_conf)
     K.set_session(sess)
 
     def feat_eng(df):
@@ -51,11 +43,14 @@ def modeling(train_path,test_path,epochs,logging=False):
             cols.append(data.shift(i))
             names += [('%s(t-%d)' % (col, i)) for col in data.columns]
         cols.append(data)
+
         names += [('%s(t)' % (col)) for col in data.columns]
         cols.append(data.shift(-lag))
+        
         names += [('%s(t+%d)' % (col, lag)) for col in data.columns]
         agg = pd.concat(cols, axis=1)
         agg.columns = names
+        
         if dropnan:
             agg.dropna(inplace=True)
         return agg
@@ -86,7 +81,6 @@ def modeling(train_path,test_path,epochs,logging=False):
         return df
 
     def mem_opt(t_set):
-        
         cols = t_set.columns.tolist()
         t_set = t_set[cols].astype(str)
         t_set = t_set.astype(float)
@@ -97,6 +91,7 @@ def modeling(train_path,test_path,epochs,logging=False):
     dataset_train = pd.read_csv(train_path)
     train = dataset_train.copy()
 
+    # parsing date
     dataset_train['Timestamp'] = pd.to_datetime(dataset_train['Timestamp'], format = '%Y-%m-%d %H:%M:%S.%f')
     dataset_train['Date']= pd.to_datetime(dataset_train['Timestamp']).apply(lambda x: x.date())
     dataset_train["Date"] = pd.to_datetime(dataset_train["Date"], format = '%Y-%m-%d')
@@ -106,11 +101,12 @@ def modeling(train_path,test_path,epochs,logging=False):
     dataset_test['Date']= pd.to_datetime(dataset_test['Timestamp']).apply(lambda x: x.date())
     dataset_test["Date"] = pd.to_datetime(dataset_test["Date"], format = '%Y-%m-%d')
 
+    # FE
     dataset_train = feat_eng(dataset_train)
     dataset_test = feat_eng(dataset_test)
     dataset_ = pd.concat([dataset_train, dataset_test])
 
-    # process data
+    # to supervised data
     series = series_to_supervised(dataset_.drop('Date', axis=1), window=window, lag=lag)
     columns_to_drop = [('%s(t+%d)' % (col, lag)) for col in ['AvailabilityZone', 'InstanceType', 'Timedel']]
     for i in range(window, 0, -1):
@@ -122,11 +118,13 @@ def modeling(train_path,test_path,epochs,logging=False):
     labels = series[[labels_col]]
     series = series.drop(labels_col, axis=1)
 
+    # to train/val
     X_train = series[:len(dataset_train)- window]
     Y_train = labels[:len(dataset_train)- window]
     X_valid = series[len(dataset_train)- window:]
     Y_valid = labels[len(dataset_train)- window:]
 
+    # reduce ram
     X_train=reduce_mem_usage(X_train)
     Y_train=reduce_mem_usage(Y_train)
     X_valid=reduce_mem_usage(X_valid)
@@ -135,6 +133,7 @@ def modeling(train_path,test_path,epochs,logging=False):
     X_train = mem_opt(X_train)
     X_valid = mem_opt(X_valid)
 
+    # reshape
     X_train_series = X_train.reshape((X_train.shape[0], X_train.shape[1], 1))
     X_valid_series = X_valid.reshape((X_valid.shape[0], X_valid.shape[1], 1))
     print('Train set shape', X_train_series.shape)
@@ -146,7 +145,7 @@ def modeling(train_path,test_path,epochs,logging=False):
     print('Train set shape', X_train_series_sub.shape)
     print('Validation set shape', X_valid_series_sub.shape)
 
-    # model
+    # modeling
     es = EarlyStopping(monitor='val_loss', mode='min', verbose=1, patience=10)
     mcp = ModelCheckpoint(filepath='weights.h5', monitor='val_loss', verbose=1, save_best_only=True, save_weights_only=True)
 
@@ -162,7 +161,7 @@ def modeling(train_path,test_path,epochs,logging=False):
     # train
     cnn_lstm_history = model_cnn_lstm.fit(X_train_series_sub, Y_train, validation_data=(X_valid_series_sub, Y_valid), epochs=epochs, verbose=1, callbacks=[es, mcp])
 
-    # predict
+    # predict & output
     cnn_lstm_valid_pred = model_cnn_lstm.predict(X_valid_series_sub)
 
     comparison = pd.read_csv(test_path)
@@ -171,7 +170,7 @@ def modeling(train_path,test_path,epochs,logging=False):
     comparison.columns =['AvailabilityZone', 'InstanceType', 'Timestamp', 'Timedel', 'Actual_Price', 'Predicted_Price']
     comparison.to_csv('../data/Prediction.csv', index=False)
     
-    # test errors
+    # get test errors
     errors = comparison['Actual_Price'] - comparison['Predicted_Price']
     mse = np.square(errors).mean()
     rmse = np.sqrt(mse)
