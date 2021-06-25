@@ -66,11 +66,12 @@ Various Machine Learning and Deep Learning models including SARIMAX, Prophet, ML
 The following table shows the evaluation scores of the significantly contributing models that we examined.
 | Features        | Target         | Model    | MAE    | RMSE   | MAPE    |
 |-----------------|----------------|----------|--------|--------|---------|
-| Feature Set   1 | SpotPrice(t+1) | [CNN-LSTM](https://machinelearningmastery.com/cnn-long-short-term-memory-networks/) | 0.0004 | 0.0027 | 0.4834  |
-| Feature Set   2 | SpotPrice      | [LSTM](https://colah.github.io/posts/2015-08-Understanding-LSTMs/) | 0.0051 | 0.1140  | 2.6201|
-| Feature Set   3 | SpotPrice      | [LGBM](https://github.com/microsoft/LightGBM)     | 0.0031 | 0.0079 | 1.7423  |
-| Feature Set   1 | SpotPrice(t+1) | [CNN](https://towardsdatascience.com/basics-of-the-classic-cnn-a3dce1225add)    | 0.0013 | 0.0039  | 0.5064  |
-| Feature Set   4 | SpotPrice      | [PyCaret](https://www.pycaret.org/tutorials/html/REG101.html) | 0.0155 | 0.2249 | 1.2028 |
+| Feature Set   1 | SpotPrice(t+1) | [CNN-LSTM](https://machinelearningmastery.com/cnn-long-short-term-memory-networks/) | 0.0004 | 0.0027 | [0.4834](https://github.com/RuichongWang/Flant/blob/main/Notebooks/cnn-lstm-the-chosen-one.ipynb)  |
+| Feature Set   2 | SpotPrice      | [LSTM](https://colah.github.io/posts/2015-08-Understanding-LSTMs/) | 0.0051 | 0.1140  | [2.6201](https://github.com/RuichongWang/Flant/blob/main/Notebooks/LSTM.ipynb)|
+| Feature Set   3 | SpotPrice      | [LSTM-2](https://colah.github.io/posts/2015-08-Understanding-LSTMs/) | 0.0051 | 0.1140  | [3.4693](https://github.com/RuichongWang/Flant/blob/main/Notebooks/LSTM_Feature%20Set%203.ipynb)|
+| Feature Set   3 | SpotPrice      | [LGBM](https://github.com/microsoft/LightGBM)     | 0.0031 | 0.0079 | [1.7423](https://github.com/RuichongWang/Flant/blob/main/Notebooks/LGBM.ipynb)  |
+| Feature Set   1 | SpotPrice(t+1) | [CNN](https://towardsdatascience.com/basics-of-the-classic-cnn-a3dce1225add)    | 0.0016 | 0.0038  | [1.2246](https://github.com/RuichongWang/Flant/blob/main/Notebooks/convolutional-neural-network.ipynb)  |
+| Feature Set   4 | SpotPrice      | [PyCaret](https://www.pycaret.org/tutorials/html/REG101.html) | 0.0169 | 0.2382 | [1.3099](https://github.com/RuichongWang/Flant/blob/main/Notebooks/pycaret-randomforest-with-cv-3.ipynb) |
 
 Please see the details on different kinds of time-series and statistical features we used to evaluate the models.
 
